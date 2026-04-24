@@ -1,0 +1,49 @@
+{
+  "lang": "en",
+  "position_title": "Junior Data Analyst",
+  "position_short": "Junior Data Analyst",
+  "company_name": "Example Company AG",
+  "contact_person": "Hiring Team",
+  "keywords": ["Data Analysis", "Excel", "SQL", "Power BI", "Reporting"],
+  "profil": "Analytical professional with experience in data preparation, reporting, and visualization in an international environment. Solid knowledge of Excel, Power Query, Power BI and SAP systems. Focused on data quality and cross-functional collaboration.",
+  "faehigkeiten": [
+    "Microsoft Excel (VBA, Pivot Tables, Power Query)",
+    "Power BI (Reports & Dashboards)",
+    "SQL and Python",
+    "SAP S/4HANA, SAP BW",
+    "Data Quality Assurance"
+  ],
+  "kompetenzen": [
+    "Analytical thinking and problem-solving",
+    "Independent and organized working style",
+    "Clear written communication in English",
+    "Teamwork in international environments"
+  ],
+  "erfahrungen": [
+    {
+      "titel": "Vendor Reporting Analyst",
+      "firma": "Previous Company, Barcelona",
+      "zeitraum": "Nov 2021 – Apr 2025",
+      "beschreibung": "Responsible for vendor reporting and data quality in an international IT distributor.",
+      "aufgaben": [
+        "Developed and maintained dashboards and KPI reports in Power BI",
+        "Prepared and transformed data using Power Query and Excel",
+        "Ensured data quality and reconciliation across SAP systems",
+        "Automated reporting processes to improve efficiency"
+      ]
+    }
+  ],
+  "ausbildung": [
+    {
+      "titel": "Psychology (M.Sc.)",
+      "institution": "University Name",
+      "zeitraum": "2015",
+      "beschreibung": "University degree with analytical focus on research methods and data interpretation."
+    }
+  ],
+  "paragraphen": [
+    "Opening paragraph — introduce yourself and why you are interested in this specific company and role.",
+    "Body paragraph — connect your most relevant experience to the job requirements. Be specific.",
+    "Closing paragraph — express enthusiasm and availability for an interview."
+  ]
+}
