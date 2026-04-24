@@ -41,3 +41,20 @@ An automated market intelligence system that detects trending products in the US
 ## Portfolio site
 
 Built with plain HTML/CSS, hosted on GitHub Pages: [stormsouls.github.io/portfolio](https://stormsouls.github.io/portfolio)
+
+---
+
+## Cinematic Photo Pipeline
+
+An automated photo processing pipeline using MobileSAM and selective HSL color grading.
+
+**What it does:**
+- Watches a folder — drop a photo, get a publication-ready JPEG in ~45 seconds automatically
+- MobileSAM semantic segmentation distinguishes subject from background without color heuristics
+- Hue-selective desaturation: gold tones survive, everything else becomes cinematic grey-slate
+- Configurable brand palette — swap gold for any hue range
+- Dual mode: fully automatic (watcher) or manual with LLM-generated SAM hints
+
+**Stack:** Python · MobileSAM · OpenCV · Watchdog
+
+**Files:** `photo-bot/auto_processor.py`, `photo-bot/sam_processor.py`, `photo-bot/photo_processor.py`

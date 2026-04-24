@@ -95,6 +95,7 @@
 
   .icon-blue  { background: #0c2d6b; }
   .icon-green { background: #0d3320; }
+  .icon-purple { background: #2d1f5e; }
 
   .card-title {
     font-size: 1.1rem;
@@ -306,6 +307,42 @@
       <span class="badge badge-live">In use</span>
       <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/evaluador_productos.py" target="_blank">evaluador_productos.py</a>
       <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/publicador_meli.py" target="_blank">publicador_meli.py</a>
+    </div>
+  </div>
+
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-icon icon-purple">&#128247;</div>
+      <div>
+        <div class="card-title">Cinematic Photo Pipeline</div>
+        <div class="card-subtitle">Python · MobileSAM · OpenCV · Folder watcher</div>
+      </div>
+    </div>
+    <div class="card-body">
+      An automated photo processing pipeline that turns a raw portrait into a publication-ready image
+      in ~45 seconds — no manual editing required. Drop a photo in a folder, and the system segments
+      the subject using MobileSAM, then applies cinematic hue-selective grading: gold tones survive,
+      everything else desaturates to a grey-slate palette.
+    </div>
+    <ul class="feature-list">
+      <li>Folder watcher — drop a photo, get the result automatically</li>
+      <li>MobileSAM semantic segmentation — distinguishes subject from background without color heuristics</li>
+      <li>Hue-selective desaturation: gold survives, everything else becomes cinematic grey-slate</li>
+      <li>Configurable brand palette — swap gold for any hue range</li>
+      <li>Dual mode: fully automatic (watcher) or manual with LLM-generated SAM hints</li>
+    </ul>
+    <div class="tag-list">
+      <span class="tag highlight">Python</span>
+      <span class="tag highlight">MobileSAM</span>
+      <span class="tag">OpenCV</span>
+      <span class="tag">Computer Vision</span>
+      <span class="tag">Image Processing</span>
+      <span class="tag">Automation</span>
+    </div>
+    <div class="card-footer">
+      <span class="badge badge-live">In use</span>
+      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/photo-bot/auto_processor.py" target="_blank">auto_processor.py</a>
+      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/photo-bot/sam_processor.py" target="_blank">sam_processor.py</a>
     </div>
   </div>
 
