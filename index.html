@@ -162,6 +162,26 @@
     gap: 0.75rem;
     padding-top: 1rem;
     border-top: 1px solid #21262d;
+    flex-wrap: wrap;
+  }
+
+  .btn-code {
+    font-size: 0.75rem;
+    color: #58a6ff;
+    text-decoration: none;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 0.2rem 0.65rem;
+    background: transparent;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .btn-code:hover { border-color: #58a6ff; background: #0c2d6b22; }
+
+  .meta-note {
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin-left: auto;
   }
 
   .badge {
@@ -242,7 +262,10 @@
     </div>
     <div class="card-footer">
       <span class="badge badge-live">In use</span>
-      <span style="font-size:0.8rem; color:#8b949e">Used to generate this application</span>
+      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/generate_cv.py" target="_blank">generate_cv.py</a>
+      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/generate_cover_letter.py" target="_blank">generate_cover_letter.py</a>
+      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/job_data_example.json" target="_blank">job_data_example.json</a>
+      <span class="meta-note">Used to generate this application</span>
     </div>
   </div>
 
@@ -250,21 +273,39 @@
     <div class="card-header">
       <div class="card-icon icon-green">&#128230;</div>
       <div>
-        <div class="card-title">Import Management Bot</div>
-        <div class="card-subtitle"><!-- tech stack here --></div>
+        <div class="card-title">Import Intelligence Bot</div>
+        <div class="card-subtitle">Python · Playwright · MercadoLibre API · Apify</div>
       </div>
     </div>
     <div class="card-body">
-      <!-- Project description goes here -->
+      An automated market intelligence system that detects trending products in the US and evaluates their
+      import viability from China to Argentina. Monitors TikTok Shop, Amazon Movers &amp; Shakers, and
+      influencer pages in real time, then runs each opportunity through a full import cost model
+      (Alibaba price + freight + customs + MercadoLibre fees) to calculate net margin and score.
+      Winning products can be listed directly on MercadoLibre Argentina via API.
     </div>
     <ul class="feature-list">
-      <!-- Features go here -->
+      <li>Multi-source trend detection: TikTok Shop (Apify), Amazon Movers &amp; Shakers (12 categories), Instagram influencer link-in-bio pages, and curated viral product blogs</li>
+      <li>Full import cost model: Alibaba estimate + air freight + 21% customs VAT + duties + 15% MeLi commission → net margin and multiplier per product</li>
+      <li>Scoring system 0–100 combining demand signals, competition on MercadoLibre, margin, and regulatory compliance alerts (ANMAT / SENASA / ENACOM)</li>
+      <li>MercadoLibre Argentina OAuth 2.0 integration with auto token refresh and direct listing via API</li>
+      <li>Anti-bot / Cloudflare bypass using Playwright headless with stealth mode</li>
+      <li>Outputs: CSV with all scored opportunities, readable TXT report, and HTML preview styled like MercadoLibre</li>
     </ul>
     <div class="tag-list">
-      <!-- Tags go here -->
+      <span class="tag highlight">Python</span>
+      <span class="tag highlight">Playwright</span>
+      <span class="tag">MercadoLibre API</span>
+      <span class="tag">OAuth 2.0</span>
+      <span class="tag">Apify</span>
+      <span class="tag">BeautifulSoup4</span>
+      <span class="tag">Web Scraping</span>
+      <span class="tag">Automation</span>
     </div>
     <div class="card-footer">
-      <span class="badge badge-wip">In progress</span>
+      <span class="badge badge-live">In use</span>
+      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/evaluador_productos.py" target="_blank">evaluador_productos.py</a>
+      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/publicador_meli.py" target="_blank">publicador_meli.py</a>
     </div>
   </div>
 
