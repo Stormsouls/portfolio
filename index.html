@@ -1,356 +1,1301 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sebastian Motzo – Projects</title>
+<meta charset="utf-8" />
+<title>Sebastian Motzo — Reporting & Automation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="description" content="Sebastian Motzo Fernández — Python automations, reporting, and AI-assisted tools. Bern, Switzerland." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg:       #09090b;
+  --bg-2:     #0d0d10;
+  --card:     #111114;
+  --line:     #1f1f24;
+  --line-2:   #27272d;
+  --mute:     #6b6b74;
+  --text:     #e6e6ea;
+  --text-2:   #a1a1aa;
+  --accent:   #818cf8;
+  --accent-2: #6366f1;
+  --accent-d: #4f46e5;
+  --good:     #22c55e;
+  --warn:     #f59e0b;
+  --ring:     rgba(129,140,248,0.25);
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #0e1117;
-    color: #e6edf3;
-    line-height: 1.6;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --serif:'Instrument Serif', serif;
+}
+[data-theme="light"] {
+  --bg: #fafaf9;
+  --bg-2: #ffffff;
+  --card: #ffffff;
+  --line: #e7e5e4;
+  --line-2: #d6d3d1;
+  --mute: #78716c;
+  --text: #1c1917;
+  --text-2: #57534e;
+  --accent: #4f46e5;
+  --accent-2: #4338ca;
+  --accent-d: #3730a3;
+  --ring: rgba(79,70,229,0.18);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  font-feature-settings: "cv11","ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* ── cursor aura (follows pointer) ── */
+.aura {
+  position: fixed; z-index: 0; pointer-events: none;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
+  opacity: 0.08; filter: blur(60px);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+  left: 50%; top: 30%;
+  will-change: transform, left, top;
+}
+[data-theme="light"] .aura { opacity: 0.15; }
+
+/* ── scroll reveal ── */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+.reveal.delay-1 { transition-delay: 0.08s; }
+.reveal.delay-2 { transition-delay: 0.16s; }
+.reveal.delay-3 { transition-delay: 0.24s; }
+.reveal.delay-4 { transition-delay: 0.32s; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── shimmer on section-rule when in view ── */
+.section-rule {
+  position: relative; overflow: hidden;
+}
+.section-rule::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  transform: translateX(-100%);
+  opacity: 0;
+}
+.section.in-view .section-rule::after {
+  animation: shimmer 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+}
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); opacity: 0.6; }
+  100% { transform: translateX(100%);  opacity: 0; }
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--accent); color: var(--bg); }
+
+/* ── subtle dotted background ─────────────────── */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+[data-theme="light"] body::before {
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+}
+
+/* ── top nav ─────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 40;
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  background: color-mix(in oklab, var(--bg) 82%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner {
+  max-width: 980px; margin: 0 auto;
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 24px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+.nav-logo .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.nav-links {
+  display: flex; gap: 22px; margin-left: auto;
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text-2);
+}
+.nav-links a { transition: color 0.15s; }
+.nav-links a:hover { color: var(--text); }
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--line-2);
+  color: var(--text);
+  width: 28px; height: 28px; border-radius: 6px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s;
+  font-size: 13px;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+
+/* ── layout ─────────────────── */
+main {
+  position: relative; z-index: 1;
+  max-width: 980px; margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── hero ─────────────────── */
+.hero {
+  padding: 96px 0 72px;
+  border-bottom: 1px solid var(--line);
+}
+.hero .eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+  padding: 6px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 100px;
+  margin-bottom: 24px;
+}
+.hero .eyebrow .pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--good);
+  position: relative;
+}
+.hero .eyebrow .pulse::after {
+  content: ''; position: absolute; inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--good);
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(36px, 6vw, 58px);
+  line-height: 1.32;
+  letter-spacing: -0.018em;
+  margin-bottom: 28px;
+  max-width: 780px;
+  text-wrap: balance;
+  padding-bottom: 0.1em;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+.hero .lede {
+  max-width: 600px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin-bottom: 28px;
+}
+.hero-meta {
+  display: flex; flex-wrap: wrap; gap: 20px 28px;
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text-2);
+  padding-top: 24px;
+  border-top: 1px dashed var(--line);
+}
+.hero-meta b { color: var(--text); font-weight: 500; }
+.hero-meta a { color: var(--accent); }
+.hero-meta a:hover { text-decoration: underline; }
+
+/* ── section header ─────────────────── */
+.section {
+  padding: 72px 0;
+  border-bottom: 1px solid var(--line);
+}
+.section-head {
+  display: flex; align-items: baseline; gap: 16px;
+  margin-bottom: 32px;
+}
+.section-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.08em;
+}
+.section-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.section-rule {
+  flex: 1; height: 1px; background: var(--line);
+}
+
+/* ── about ─────────────────── */
+.about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 48px;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.about p + p { margin-top: 14px; }
+.about b { color: var(--text); font-weight: 500; }
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  align-self: start;
+}
+.about-stat {
+  background: var(--bg-2);
+  padding: 18px 20px;
+}
+.about-stat .n {
+  font-family: var(--serif);
+  font-size: 28px;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.about-stat .n .accent { color: var(--accent); }
+.about-stat .l {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-top: 8px;
+}
+
+/* ── chip hover ─────────────────── */
+.chip {
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.25s, color 0.25s;
+}
+.chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ── metric counter pulse on reveal ─────────────────── */
+.metric {
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+.metric:hover { transform: translateY(-2px); }
+
+/* ── project card ─────────────────── */
+.project {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.project:hover {
+  border-color: var(--line-2);
+}
+.project-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  padding: 28px 28px 20px;
+  align-items: start;
+}
+.project-title-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.project h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.project-id {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.08em;
+}
+.project-sub {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+.status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 100px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.status.live    { color: var(--good);   border-color: color-mix(in oklab, var(--good) 40%, transparent); background: color-mix(in oklab, var(--good) 10%, transparent); }
+.status.wip     { color: var(--warn);   border-color: color-mix(in oklab, var(--warn) 40%, transparent); background: color-mix(in oklab, var(--warn) 10%, transparent); }
+.status.shipped { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 40%, transparent); background: color-mix(in oklab, var(--accent) 10%, transparent); }
+.status .d { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.project-body {
+  padding: 0 28px 20px;
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
+/* ── metrics strip ─────────────────── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 0 28px 24px;
+}
+.metric {
+  padding: 14px 16px 14px 0;
+  border-left: 1px solid var(--line);
+  padding-left: 16px;
+  margin-left: -1px;
+}
+.metric:first-child { border-left: 0; padding-left: 0; margin-left: 0; }
+.metric .m-n {
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.metric .m-n .accent { color: var(--accent); }
+.metric .m-n .small { font-family: var(--sans); font-size: 14px; color: var(--text-2); margin-left: 2px; }
+.metric .m-l {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* ── architecture diagram ─────────────────── */
+.arch {
+  padding: 0 28px 24px;
+}
+.arch-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+}
+.arch-label {
+  position: absolute; top: 10px; right: 12px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--mute);
+  letter-spacing: 0.08em;
+}
+.arch-flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.arch-node {
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.arch-node.accent { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 8%, var(--card)); }
+.arch-node {
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), border-color 0.3s, box-shadow 0.3s;
+}
+.arch-node:hover {
+  transform: translateY(-3px) scale(1.04);
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px -8px var(--ring);
+}
+.arch-card.in .arch-node {
+  animation: nodePop 0.55s cubic-bezier(0.22,1,0.36,1) backwards;
+}
+.arch-card.in .arch-node:nth-child(1) { animation-delay: 0.10s; }
+.arch-card.in .arch-node:nth-child(3) { animation-delay: 0.25s; }
+.arch-card.in .arch-node:nth-child(5) { animation-delay: 0.40s; }
+.arch-card.in .arch-node:nth-child(7) { animation-delay: 0.55s; }
+.arch-card.in .arch-arrow {
+  animation: arrowFade 0.45s ease backwards;
+}
+.arch-card.in .arch-arrow:nth-child(2) { animation-delay: 0.22s; }
+.arch-card.in .arch-arrow:nth-child(4) { animation-delay: 0.37s; }
+.arch-card.in .arch-arrow:nth-child(6) { animation-delay: 0.52s; }
+@keyframes nodePop {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes arrowFade {
+  0%   { opacity: 0; transform: translateX(-6px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arch-card.in .arch-node, .arch-card.in .arch-arrow { animation: none; }
+}
+.arch-node .ico {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.arch-node .t {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.arch-node .s {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+.arch-arrow {
+  color: var(--mute);
+  font-family: var(--mono);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ── features list ─────────────────── */
+.features {
+  padding: 0 28px 24px;
+  list-style: none;
+}
+.features li {
+  padding: 10px 0 10px 22px;
+  position: relative;
+  font-size: 14.5px;
+  color: var(--text-2);
+  border-top: 1px dashed var(--line);
+  line-height: 1.55;
+}
+.features li:first-child { border-top: 0; }
+.features li::before {
+  content: '→';
+  position: absolute;
+  left: 0; top: 10px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.features li b { color: var(--text); font-weight: 500; }
+
+/* ── stack row ─────────────────── */
+.stack {
+  padding: 0 28px 20px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-2);
+  transition: border-color 0.15s, color 0.15s;
+}
+.chip.primary {
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  background: color-mix(in oklab, var(--accent) 8%, var(--bg-2));
+}
+.chip:hover { border-color: var(--accent); color: var(--text); }
+
+/* ── project footer ─────────────────── */
+.project-foot {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 28px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.file-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  padding: 6px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.file-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+}
+.file-link .gh { opacity: 0.6; }
+.foot-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mute);
+  margin-left: auto;
+}
+
+/* ── stack section ─────────────────── */
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.stack-cell {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px 16px;
+}
+.stack-cell h4 {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.stack-cell ul { list-style: none; }
+.stack-cell li {
+  font-size: 13px;
+  color: var(--text);
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.stack-cell li:last-child { border-bottom: 0; }
+
+/* ── experience timeline ─────────────────── */
+.timeline { position: relative; }
+.tl-item {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 32px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.tl-item:first-child { border-top: 0; }
+.tl-when {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+.tl-role {
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--text);
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+.tl-org {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.tl-desc {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* ── contact ─────────────────── */
+.contact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.contact-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+}
+.contact-card h4 {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.contact-card .v {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: block;
+}
+.contact-card .v:hover { color: var(--accent); }
+.contact-card .lang-row {
+  display: flex; gap: 14px; align-items: baseline;
+  font-family: var(--mono); font-size: 12px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.contact-card .lang-row:last-child { border-bottom: 0; }
+.contact-card .lang-row .lvl {
+  margin-left: auto;
+  color: var(--text-2);
+  font-size: 11px;
+}
+.contact-card .lang-bar {
+  display: inline-flex; gap: 2px;
+}
+.contact-card .lang-bar span {
+  width: 14px; height: 4px;
+  background: var(--line-2);
+  border-radius: 2px;
+}
+.contact-card .lang-bar span.on { background: var(--accent); }
+
+/* ── footer ─────────────────── */
+footer {
+  position: relative; z-index: 1;
+  padding: 40px 24px 60px;
+  text-align: center;
+  color: var(--mute);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+footer .sep { opacity: 0.4; margin: 0 10px; }
+
+/* ── responsive ─────────────────── */
+@media (max-width: 720px) {
+  .nav-inner { padding: 12px 18px; }
+  .nav-links { display: none; }
+  main { padding: 0 18px; }
+  .hero { padding: 56px 0 44px; }
+  .hero h1 { font-size: 32px; }
+  .section { padding: 48px 0; }
+  .about { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .metrics .metric:nth-child(3) { border-left: 0; padding-left: 0; margin-left: 0; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 4px;}
+  .arch-flow {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
-
-  header {
-    background: #161b22;
-    border-bottom: 1px solid #30363d;
-    padding: 3rem 2rem 2.5rem;
-    text-align: center;
-  }
-
-  header h1 {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #e6edf3;
-    margin-bottom: 0.4rem;
-  }
-
-  header p {
-    color: #8b949e;
-    font-size: 1rem;
-  }
-
-  header .links {
-    margin-top: 1rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  header .links a {
-    color: #58a6ff;
-    text-decoration: none;
-    font-size: 0.9rem;
-  }
-
-  header .links a:hover { text-decoration: underline; }
-
-  main {
-    max-width: 860px;
-    margin: 3rem auto;
-    padding: 0 1.5rem;
-  }
-
-  .section-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #8b949e;
-    margin-bottom: 1.25rem;
-  }
-
-  .project-card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    padding: 1.75rem;
-    margin-bottom: 1.25rem;
-    transition: border-color 0.15s;
-  }
-
-  .project-card:hover { border-color: #58a6ff; }
-
-  .card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .card-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 18px;
-  }
-
-  .icon-blue  { background: #0c2d6b; }
-  .icon-green { background: #0d3320; }
-  .icon-purple { background: #2d1f5e; }
-
-  .card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #e6edf3;
-    margin-bottom: 0.2rem;
-  }
-
-  .card-subtitle {
-    font-size: 0.85rem;
-    color: #8b949e;
-  }
-
-  .card-body {
-    font-size: 0.92rem;
-    color: #c9d1d9;
-    margin-bottom: 1.25rem;
-  }
-
-  .tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .tag {
-    background: #21262d;
-    border: 1px solid #30363d;
-    border-radius: 20px;
-    padding: 0.2rem 0.75rem;
-    font-size: 0.78rem;
-    color: #8b949e;
-  }
-
-  .tag.highlight {
-    background: #0c2d6b;
-    border-color: #1f4a9e;
-    color: #79c0ff;
-  }
-
-  .feature-list {
-    list-style: none;
-    margin-bottom: 1.25rem;
-  }
-
-  .feature-list li {
-    font-size: 0.88rem;
-    color: #8b949e;
-    padding: 0.3rem 0;
-    padding-left: 1.2rem;
-    position: relative;
-  }
-
-  .feature-list li::before {
-    content: "→";
-    position: absolute;
-    left: 0;
-    color: #58a6ff;
-  }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding-top: 1rem;
-    border-top: 1px solid #21262d;
-    flex-wrap: wrap;
-  }
-
-  .btn-code {
-    font-size: 0.75rem;
-    color: #58a6ff;
-    text-decoration: none;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 0.2rem 0.65rem;
-    background: transparent;
-    transition: border-color 0.15s, background 0.15s;
-  }
-
-  .btn-code:hover { border-color: #58a6ff; background: #0c2d6b22; }
-
-  .meta-note {
-    font-size: 0.8rem;
-    color: #8b949e;
-    margin-left: auto;
-  }
-
-  .badge {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    font-weight: 500;
-  }
-
-  .badge-live  { background: #0d3320; color: #3fb950; border: 1px solid #196c2e; }
-  .badge-wip   { background: #2d1f00; color: #d29922; border: 1px solid #6e4c00; }
-
-  .placeholder-card {
-    background: #0e1117;
-    border: 1px dashed #30363d;
-    border-radius: 10px;
-    padding: 1.75rem;
-    margin-bottom: 1.25rem;
-    text-align: center;
-    color: #484f58;
-    font-size: 0.9rem;
-  }
-
-  footer {
-    text-align: center;
-    padding: 2rem;
-    color: #484f58;
-    font-size: 0.82rem;
-    border-top: 1px solid #21262d;
-    margin-top: 3rem;
-  }
+  .arch-arrow { transform: rotate(90deg); padding: 4px 0; }
+  .stack-grid { grid-template-columns: 1fr 1fr; }
+  .contact { grid-template-columns: 1fr; }
+  .tl-item { grid-template-columns: 1fr; gap: 6px; }
+  .project-head { padding: 22px 20px 16px; }
+  .project-body, .metrics, .arch, .features, .stack, .project-foot { padding-left: 20px; padding-right: 20px; }
+}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Sebastian Motzo</h1>
-  <p>Reporting & Automation · Bern, Switzerland</p>
-  <div class="links">
-    <a href="mailto:sebastian.motzo.fernandez@bluewin.ch">sebastian.motzo.fernandez@bluewin.ch</a>
-    <span style="color:#30363d">·</span>
-    <a href="tel:+41766457054">076 645 70 54</a>
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-logo"><span class="dot"></span>sebastian.motzo</a>
+    <div class="nav-links">
+      <a href="#about">about</a>
+      <a href="#projects">projects</a>
+      <a href="#stack">stack</a>
+      <a href="#experience">experience</a>
+      <a href="#contact">contact</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</button>
   </div>
-</header>
+</nav>
 
-<main>
-  <p class="section-label">Projects</p>
+<main id="top">
 
-  <div class="project-card">
-    <div class="card-header">
-      <div class="card-icon icon-blue">&#128196;</div>
+<div class="aura" id="aura"></div>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <span class="eyebrow"><span class="pulse"></span>Available · Bern, Switzerland</span>
+    <h1>I build <em>Python automations</em> that remove repetitive work from the pipeline.</h1>
+    <p class="lede">
+      Reporting & automation engineer. I design small, reliable systems that turn manual hours into a single command — scraping, data modeling, PDF generation, API integration.
+    </p>
+    <div class="hero-meta">
+      <div><b>Sebastian Motzo Fernández</b></div>
+      <div>Bern · CH · Permit B</div>
+      <div>3+ yrs reporting · analyst</div>
+      <div><a href="https://github.com/stormsouls" target="_blank">github.com/stormsouls ↗</a></div>
+      <div><a href="mailto:sebastian.motzo.fernandez@bluewin.ch">sebastian.motzo.fernandez@bluewin.ch</a></div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="section" id="about">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">About</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="about">
       <div>
-        <div class="card-title">Job Application Bot</div>
-        <div class="card-subtitle">Python · PDF generation · Claude AI</div>
+        <p>
+          Detail-oriented analyst with <b>3+ years handling structured data</b>, ensuring data quality, and supporting reporting processes in an international corporate environment. Solid working knowledge of <b>Excel, SQL, Power Query and SAP</b> (S/4HANA, BW, BO).
+        </p>
+        <p>
+          I approach data work with care and precision — whether figures align, whether sources are consistent, whether conclusions are actually supported by the underlying material. I'm uncomfortable with assumptions and tend to verify before concluding.
+        </p>
+        <p>
+          On top of the analyst work, I build <b>Python tools</b> that remove manual overhead from analytical workflows — if something is repetitive and structured, I'd rather build a reliable process than do it by hand each time. The bots below are production utilities: one generated the CV and cover letter you just read.
+        </p>
+      </div>
+      <div class="about-stats">
+        <div class="about-stat">
+          <div class="n" data-count="3">0<span class="small">+ yrs</span></div>
+          <div class="l">Reporting / analysis</div>
+        </div>
+        <div class="about-stat">
+          <div class="n" data-count="3">0</div>
+          <div class="l">Production bots</div>
+        </div>
+        <div class="about-stat">
+          <div class="n">10<span class="small">min →</span><span class="accent">s</span></div>
+          <div class="l">Manual → auto</div>
+        </div>
+        <div class="about-stat">
+          <div class="n" data-count="500" data-prefix="~">0<span class="small">/run</span></div>
+          <div class="l">Products scored</div>
+        </div>
       </div>
     </div>
-    <div class="card-body">
-      A fully automated system that generates tailored CVs and cover letters in PDF format for each job offer.
-      The bot reads a job description, adapts the content, selects the most relevant experiences, matches the
-      language of the offer (German or English), and outputs production-ready documents — including the
-      CV and cover letter for this very application.
-    </div>
-    <ul class="feature-list">
-      <li>Detects offer language automatically and generates all documents in the same language</li>
-      <li>Adapts CV content per offer — experience selection, keywords, profile text</li>
-      <li>Two CV modes: visual two-column layout and ATS-safe single-column format</li>
-      <li>Compresses and embeds photo automatically to keep PDFs under LinkedIn's 2MB limit</li>
-      <li>Driven by a structured JSON data model — clean separation of content and rendering</li>
-    </ul>
-    <div class="tag-list">
-      <span class="tag highlight">Python</span>
-      <span class="tag highlight">ReportLab</span>
-      <span class="tag">PDF generation</span>
-      <span class="tag">Claude AI</span>
-      <span class="tag">JSON</span>
-      <span class="tag">Automation</span>
-      <span class="tag">Pillow</span>
-    </div>
-    <div class="card-footer">
-      <span class="badge badge-live">In use</span>
-      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/generate_cv.py" target="_blank">generate_cv.py</a>
-      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/generate_cover_letter.py" target="_blank">generate_cover_letter.py</a>
-      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/job_data_example.json" target="_blank">job_data_example.json</a>
-      <span class="meta-note">Used to generate this application</span>
-    </div>
-  </div>
+  </section>
 
-  <div class="project-card">
-    <div class="card-header">
-      <div class="card-icon icon-green">&#128230;</div>
-      <div>
-        <div class="card-title">Import Intelligence Bot</div>
-        <div class="card-subtitle">Python · Playwright · MercadoLibre API · Apify</div>
+  <!-- ============ PROJECTS ============ -->
+  <section class="section" id="projects">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Selected projects</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <!-- PROJECT 1 -->
+    <article class="project">
+      <header class="project-head">
+        <div>
+          <div class="project-title-row">
+            <span class="project-id">/01</span>
+            <h3>Job Application Bot</h3>
+          </div>
+          <div class="project-sub">Python · ReportLab · Claude API · JSON schema</div>
+        </div>
+        <span class="status live"><span class="d"></span>In production</span>
+      </header>
+
+      <p class="project-body">
+        An automated pipeline that generates tailored CVs and cover letters as print-ready PDFs for each job offer. The system reads the posting, detects its language, picks the most relevant experiences from a structured profile, and outputs both a visual two-column CV and an ATS-safe single-column version — plus the matching cover letter.
+      </p>
+
+      <!-- metrics -->
+      <div class="metrics">
+        <div class="metric">
+          <div class="m-n">10<span class="small">min</span> <span class="accent">→ s</span></div>
+          <div class="m-l">Manual → generated</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">2</div>
+          <div class="m-l">CV modes (visual/ATS)</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">1<span class="small">JSON</span></div>
+          <div class="m-l">Source of truth</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">&lt;2<span class="small">MB</span></div>
+          <div class="m-l">LinkedIn-safe size</div>
+        </div>
+      </div>
+
+      <!-- architecture -->
+      <div class="arch">
+        <div class="arch-card">
+          <span class="arch-label">ARCHITECTURE</span>
+          <div class="arch-flow">
+            <div class="arch-node"><div class="ico">▤</div><div class="t">Job posting</div><div class="s">Text input</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node accent"><div class="ico">✦</div><div class="t">Claude API</div><div class="s">Lang + match</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="ico">{ }</div><div class="t">JSON model</div><div class="s">Profile data</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="ico">◨</div><div class="t">ReportLab</div><div class="s">CV + cover</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- features -->
+      <ul class="features">
+        <li><b>Language detection</b> — auto-detects DE/EN from the offer and generates every document in the same language.</li>
+        <li><b>Content adaptation</b> — selects the most relevant experiences and keywords per posting from a single profile source.</li>
+        <li><b>Two CV modes</b> — visual two-column layout for humans, ATS-safe single-column for screening bots.</li>
+        <li><b>Asset pipeline</b> — Pillow compresses and embeds the photo automatically to stay under LinkedIn's 2 MB limit.</li>
+        <li><b>Clean separation</b> — structured JSON as single source of truth; rendering is templated, no content lives in the code.</li>
+      </ul>
+
+      <!-- stack -->
+      <div class="stack">
+        <span class="chip primary">Python 3.11</span>
+        <span class="chip primary">ReportLab</span>
+        <span class="chip">Claude API</span>
+        <span class="chip">Pillow</span>
+        <span class="chip">JSON Schema</span>
+        <span class="chip">pypdf</span>
+      </div>
+
+      <!-- footer -->
+      <footer class="project-foot">
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/generate_cv.py" target="_blank"><span class="gh">▲</span>generate_cv.py</a>
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/generate_cv_ats.py" target="_blank"><span class="gh">▲</span>generate_cv_ats.py</a>
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/generate_cover_letter.py" target="_blank"><span class="gh">▲</span>generate_cover_letter.py</a>
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/job_data_example.json" target="_blank"><span class="gh">▲</span>job_data_example.json</a>
+        <span class="foot-note">→ generated this application</span>
+      </footer>
+    </article>
+
+    <!-- PROJECT 2 -->
+    <article class="project">
+      <header class="project-head">
+        <div>
+          <div class="project-title-row">
+            <span class="project-id">/02</span>
+            <h3>Import Intelligence Bot</h3>
+          </div>
+          <div class="project-sub">Python · Playwright · MercadoLibre API · Apify</div>
+        </div>
+        <span class="status live"><span class="d"></span>In production</span>
+      </header>
+
+      <p class="project-body">
+        A market-intelligence system that detects trending products in the US and evaluates their import viability from China to Argentina. Multi-source scraping, full cost modeling (Alibaba + freight + customs + marketplace fees), and one-click listing on MercadoLibre via API.
+      </p>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="m-n">~500<span class="small">/run</span></div>
+          <div class="m-l">Products scored</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">4</div>
+          <div class="m-l">Data sources</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">12</div>
+          <div class="m-l">Amazon categories</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">1<span class="small">-click</span></div>
+          <div class="m-l">MeLi publishing</div>
+        </div>
+      </div>
+
+      <div class="arch">
+        <div class="arch-card">
+          <span class="arch-label">PIPELINE</span>
+          <div class="arch-flow">
+            <div class="arch-node"><div class="ico">◉</div><div class="t">Scrapers</div><div class="s">TikTok · Amazon · IG</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node accent"><div class="ico">$</div><div class="t">Cost model</div><div class="s">CN → AR</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="ico">#</div><div class="t">Scoring 0–100</div><div class="s">Margin + demand</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="ico">↗</div><div class="t">MeLi API</div><div class="s">Auto-publish</div></div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="features">
+        <li><b>Multi-source trend detection</b> — TikTok Shop via Apify, Amazon Movers & Shakers across 12 categories, Instagram link-in-bio pages, and curated viral-product blogs.</li>
+        <li><b>Full import cost model</b> — Alibaba estimate + air freight + 21% customs VAT + duties + 15% MeLi commission → net margin and multiplier per product.</li>
+        <li><b>Compliance alerts</b> — flags regulatory risk (ANMAT / SENASA / ENACOM) before publishing.</li>
+        <li><b>OAuth 2.0 integration</b> — MercadoLibre Argentina with auto token refresh; direct listing via API.</li>
+        <li><b>Anti-bot scraping</b> — Playwright headless with stealth mode, Cloudflare bypass.</li>
+        <li><b>Three outputs</b> — scored CSV for spreadsheets, readable TXT report, and HTML preview styled like a MercadoLibre listing.</li>
+      </ul>
+
+      <div class="stack">
+        <span class="chip primary">Python 3.11</span>
+        <span class="chip primary">Playwright</span>
+        <span class="chip">MercadoLibre API</span>
+        <span class="chip">OAuth 2.0</span>
+        <span class="chip">Apify</span>
+        <span class="chip">BeautifulSoup4</span>
+        <span class="chip">pandas</span>
+        <span class="chip">Jinja2</span>
+      </div>
+
+      <footer class="project-foot">
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/evaluador_productos.py" target="_blank"><span class="gh">▲</span>evaluador_productos.py</a>
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/publicador_meli.py" target="_blank"><span class="gh">▲</span>publicador_meli.py</a>
+        <span class="foot-note">→ internal use · sample output on request</span>
+      </footer>
+    </article>
+
+    <!-- PROJECT 3 — Cinematic Photo Pipeline -->
+    <article class="project">
+      <header class="project-head">
+        <div>
+          <div class="project-title-row">
+            <span class="project-id">/03</span>
+            <h3>Cinematic Photo Pipeline</h3>
+          </div>
+          <div class="project-sub">Python · MobileSAM · OpenCV · Watchdog</div>
+        </div>
+        <span class="status live"><span class="d"></span>In production</span>
+      </header>
+
+      <p class="project-body">
+        An automated image-processing pipeline that turns a raw portrait into a publication-ready JPEG in roughly 45 seconds — no manual editing. Drop a photo into a watched folder; the system segments the subject with MobileSAM and applies hue-selective grading: gold tones survive, everything else desaturates to a grey-slate cinematic palette.
+      </p>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="m-n">~45<span class="small">s</span></div>
+          <div class="m-l">End-to-end / photo</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">0</div>
+          <div class="m-l">Manual edits needed</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">2</div>
+          <div class="m-l">Modes (auto/manual)</div>
+        </div>
+        <div class="metric">
+          <div class="m-n">HSL</div>
+          <div class="m-l">Hue-selective grade</div>
+        </div>
+      </div>
+
+      <div class="arch">
+        <div class="arch-card">
+          <span class="arch-label">PIPELINE</span>
+          <div class="arch-flow">
+            <div class="arch-node"><div class="ico">▦</div><div class="t">Watcher</div><div class="s">Drop folder</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node accent"><div class="ico">◑</div><div class="t">MobileSAM</div><div class="s">Subject mask</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="ico">◔</div><div class="t">HSL grade</div><div class="s">Gold-selective</div></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node"><div class="ico">▣</div><div class="t">JPEG out</div><div class="s">Publish-ready</div></div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="features">
+        <li><b>Folder watcher</b> — Watchdog monitors a drop folder and triggers the pipeline on any new file; zero CLI involvement.</li>
+        <li><b>Semantic segmentation</b> — MobileSAM separates subject from background without color heuristics; robust on complex scenes.</li>
+        <li><b>Hue-selective desaturation</b> — gold-range hues preserve saturation; the rest collapses to a cinematic grey-slate palette.</li>
+        <li><b>Configurable palette</b> — the "surviving" hue range is a single config value; swap gold for any brand color in seconds.</li>
+        <li><b>Dual mode</b> — fully automatic (watcher) or manual with LLM-generated SAM prompts for tricky shots.</li>
+      </ul>
+
+      <div class="stack">
+        <span class="chip primary">Python 3.11</span>
+        <span class="chip primary">MobileSAM</span>
+        <span class="chip">OpenCV</span>
+        <span class="chip">Watchdog</span>
+        <span class="chip">NumPy</span>
+        <span class="chip">Pillow</span>
+      </div>
+
+      <footer class="project-foot">
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/photo-bot/auto_processor.py" target="_blank"><span class="gh">▲</span>auto_processor.py</a>
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/photo-bot/sam_processor.py" target="_blank"><span class="gh">▲</span>sam_processor.py</a>
+        <a class="file-link" href="https://github.com/stormsouls/portfolio/blob/main/photo-bot/photo_processor.py" target="_blank"><span class="gh">▲</span>photo_processor.py</a>
+      </footer>
+    </article>
+  </section>
+
+  <!-- ============ STACK ============ -->
+  <section class="section" id="stack">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Stack</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="stack-grid">
+      <div class="stack-cell">
+        <h4>Data & reporting</h4>
+        <ul>
+          <li>Excel (VBA, Pivots)</li>
+          <li>Power Query</li>
+          <li>SQL</li>
+          <li>Power BI</li>
+        </ul>
+      </div>
+      <div class="stack-cell">
+        <h4>Enterprise</h4>
+        <ul>
+          <li>SAP S/4HANA</li>
+          <li>SAP BW</li>
+          <li>SAP BO</li>
+          <li>MercadoLibre API</li>
+        </ul>
+      </div>
+      <div class="stack-cell">
+        <h4>Python</h4>
+        <ul>
+          <li>pandas · NumPy</li>
+          <li>ReportLab · Pillow</li>
+          <li>Playwright · BS4</li>
+          <li>OpenCV · MobileSAM</li>
+        </ul>
+      </div>
+      <div class="stack-cell">
+        <h4>APIs & AI</h4>
+        <ul>
+          <li>Claude API</li>
+          <li>OAuth 2.0 · REST</li>
+          <li>Requests / httpx</li>
+          <li>JSON Schema</li>
+        </ul>
       </div>
     </div>
-    <div class="card-body">
-      An automated market intelligence system that detects trending products in the US and evaluates their
-      import viability from China to Argentina. Monitors TikTok Shop, Amazon Movers &amp; Shakers, and
-      influencer pages in real time, then runs each opportunity through a full import cost model
-      (Alibaba price + freight + customs + MercadoLibre fees) to calculate net margin and score.
-      Winning products can be listed directly on MercadoLibre Argentina via API.
-    </div>
-    <ul class="feature-list">
-      <li>Multi-source trend detection: TikTok Shop (Apify), Amazon Movers &amp; Shakers (12 categories), Instagram influencer link-in-bio pages, and curated viral product blogs</li>
-      <li>Full import cost model: Alibaba estimate + air freight + 21% customs VAT + duties + 15% MeLi commission → net margin and multiplier per product</li>
-      <li>Scoring system 0–100 combining demand signals, competition on MercadoLibre, margin, and regulatory compliance alerts (ANMAT / SENASA / ENACOM)</li>
-      <li>MercadoLibre Argentina OAuth 2.0 integration with auto token refresh and direct listing via API</li>
-      <li>Anti-bot / Cloudflare bypass using Playwright headless with stealth mode</li>
-      <li>Outputs: CSV with all scored opportunities, readable TXT report, and HTML preview styled like MercadoLibre</li>
-    </ul>
-    <div class="tag-list">
-      <span class="tag highlight">Python</span>
-      <span class="tag highlight">Playwright</span>
-      <span class="tag">MercadoLibre API</span>
-      <span class="tag">OAuth 2.0</span>
-      <span class="tag">Apify</span>
-      <span class="tag">BeautifulSoup4</span>
-      <span class="tag">Web Scraping</span>
-      <span class="tag">Automation</span>
-    </div>
-    <div class="card-footer">
-      <span class="badge badge-live">In use</span>
-      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/evaluador_productos.py" target="_blank">evaluador_productos.py</a>
-      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/import-bot/publicador_meli.py" target="_blank">publicador_meli.py</a>
-    </div>
-  </div>
+  </section>
 
-  <div class="project-card">
-    <div class="card-header">
-      <div class="card-icon icon-purple">&#128247;</div>
-      <div>
-        <div class="card-title">Cinematic Photo Pipeline</div>
-        <div class="card-subtitle">Python · MobileSAM · OpenCV · Folder watcher</div>
+  <!-- ============ EXPERIENCE ============ -->
+  <section class="section" id="experience">
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Experience</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-when">Nov 2021 — Apr 2025</div>
+        <div>
+          <div class="tl-role">Vendor Reporting Analyst</div>
+          <div class="tl-org">TD SYNNEX · Barcelona</div>
+          <div class="tl-desc">Data quality and vendor reporting across inventory, sales, and financial datasets in a large international IT distributor. Reviewed and validated figures across SAP systems, cleaned and organized datasets in Excel / Power Query, and identified anomalies before they reached stakeholders. Automated repetitive reporting tasks with VBA and Python — including the document bot featured above.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">Dec 2020 — Nov 2021</div>
+        <div>
+          <div class="tl-role">Customer Care Representative</div>
+          <div class="tl-org">AYESA · Barcelona</div>
+          <div class="tl-desc">Reviewed service data and ensured factual accuracy of records in the energy and e-mobility sector. Corrected inconsistencies, prepared structured reports, and verified that figures and categories aligned with underlying source material.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">2024 — now</div>
+        <div>
+          <div class="tl-role">Python Automation — independent</div>
+          <div class="tl-org">Self-directed · Bern, CH</div>
+          <div class="tl-desc">End-to-end bots (scraping, data modeling, PDF generation, API integration) shipped in weeks. The three projects above are the current surface area. Full CV available on request — generated in seconds by the bot in §02/01.</div>
+        </div>
       </div>
     </div>
-    <div class="card-body">
-      An automated photo processing pipeline that turns a raw portrait into a publication-ready image
-      in ~45 seconds — no manual editing required. Drop a photo in a folder, and the system segments
-      the subject using MobileSAM, then applies cinematic hue-selective grading: gold tones survive,
-      everything else desaturates to a grey-slate palette.
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="section" id="contact">
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Contact</h2>
+      <div class="section-rule"></div>
     </div>
-    <ul class="feature-list">
-      <li>Folder watcher — drop a photo, get the result automatically</li>
-      <li>MobileSAM semantic segmentation — distinguishes subject from background without color heuristics</li>
-      <li>Hue-selective desaturation: gold survives, everything else becomes cinematic grey-slate</li>
-      <li>Configurable brand palette — swap gold for any hue range</li>
-      <li>Dual mode: fully automatic (watcher) or manual with LLM-generated SAM hints</li>
-    </ul>
-    <div class="tag-list">
-      <span class="tag highlight">Python</span>
-      <span class="tag highlight">MobileSAM</span>
-      <span class="tag">OpenCV</span>
-      <span class="tag">Computer Vision</span>
-      <span class="tag">Image Processing</span>
-      <span class="tag">Automation</span>
+    <div class="contact">
+      <div class="contact-card">
+        <h4>Reach me</h4>
+        <a class="v" href="mailto:sebastian.motzo.fernandez@bluewin.ch">sebastian.motzo.fernandez@bluewin.ch</a>
+        <a class="v" href="tel:+41766457054">+41 76 645 70 54</a>
+        <a class="v" href="https://github.com/stormsouls" target="_blank">github.com/stormsouls ↗</a>
+      </div>
+      <div class="contact-card">
+        <h4>Location & status</h4>
+        <div class="v" style="cursor:default">Stöckackerstrasse 77, 3018 Bern</div>
+        <div class="v" style="cursor:default">Permit B · Eligible to work in CH</div>
+        <div class="v" style="color: var(--good); cursor: default;"><span class="pulse" style="margin-right:8px"></span>Open to Junior Data Analyst roles</div>
+      </div>
     </div>
-    <div class="card-footer">
-      <span class="badge badge-live">In use</span>
-      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/photo-bot/auto_processor.py" target="_blank">auto_processor.py</a>
-      <a class="btn-code" href="https://github.com/stormsouls/portfolio/blob/main/photo-bot/sam_processor.py" target="_blank">sam_processor.py</a>
-    </div>
-  </div>
+  </section>
 
 </main>
 
 <footer>
-  Built with Python & Claude AI &nbsp;·&nbsp; Sebastian Motzo Fernandez &nbsp;·&nbsp; 2026
+  built with python & care <span class="sep">·</span> sebastian motzo fernández <span class="sep">·</span> bern, 2026
 </footer>
+
+<script>
+  // Theme toggle with persistence
+  const KEY = 'motzo-theme';
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const saved = localStorage.getItem(KEY) || 'dark';
+  if (saved === 'light') root.setAttribute('data-theme', 'light');
+  btn.textContent = saved === 'light' ? '☾' : '◐';
+  btn.addEventListener('click', () => {
+    const isLight = root.getAttribute('data-theme') === 'light';
+    if (isLight) { root.removeAttribute('data-theme'); localStorage.setItem(KEY, 'dark'); btn.textContent = '◐'; }
+    else         { root.setAttribute('data-theme', 'light'); localStorage.setItem(KEY, 'light'); btn.textContent = '☾'; }
+  });
+
+  // ── cursor aura (mouse-follow accent glow) ──────────────────────────────────────────────────────────
+  const aura = document.getElementById('aura');
+  if (aura && !matchMedia('(pointer: coarse)').matches) {
+    let tx = innerWidth / 2, ty = innerHeight * 0.3, cx = tx, cy = ty;
+    addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
+    (function loop() {
+      cx += (tx - cx) * 0.08;
+      cy += (ty - cy) * 0.08;
+      aura.style.left = cx + 'px';
+      aura.style.top  = cy + 'px';
+      requestAnimationFrame(loop);
+    })();
+  } else if (aura) {
+    aura.style.display = 'none';
+  }
+
+  // ── scroll reveal ─────────────────────────────────────────────────────────────────────────────────────
+  const revealables = [
+    ['.section', ''],
+    ['.hero .eyebrow', 'delay-1'],
+    ['.hero h1', 'delay-2'],
+    ['.hero .lede', 'delay-3'],
+    ['.hero .hero-meta', 'delay-4'],
+    ['.about > div', ''],
+    ['.project', ''],
+    ['.stack-cell', ''],
+    ['.tl-item', ''],
+    ['.contact-card', ''],
+  ];
+  revealables.forEach(([sel, extra]) => {
+    document.querySelectorAll(sel).forEach(el => {
+      el.classList.add('reveal');
+      if (extra) el.classList.add(extra);
+    });
+  });
+  // staggered delays per sibling within containers
+  document.querySelectorAll('.about-stats').forEach(container => {
+    container.querySelectorAll('.about-stat').forEach((el, i) => {
+      el.classList.add('reveal', 'delay-' + Math.min(i + 1, 4));
+    });
+  });
+  document.querySelectorAll('.stack-grid').forEach(container => {
+    container.querySelectorAll('.stack-cell').forEach((el, i) => {
+      el.classList.add('delay-' + Math.min(i + 1, 4));
+    });
+  });
+  document.querySelectorAll('.metrics').forEach(container => {
+    container.querySelectorAll('.metric').forEach((el, i) => {
+      el.classList.add('reveal', 'delay-' + Math.min(i + 1, 4));
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        if (entry.target.classList.contains('section')) entry.target.classList.add('in-view');
+        // trigger arch pipeline animation
+        entry.target.querySelectorAll('.arch-card').forEach(c => c.classList.add('in'));
+        // trigger counters
+        entry.target.querySelectorAll('[data-count]').forEach(animateCounter);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal, .section').forEach(el => io.observe(el));
+
+  // ── number counter ───────────────────────────────────────────────────────────────────────────────
+  function animateCounter(el) {
+    if (el.dataset.counted) return;
+    el.dataset.counted = '1';
+    const target = parseFloat(el.dataset.count);
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    // capture inner HTML after the leading text node (to preserve .small/.accent spans)
+    const children = Array.from(el.children);
+    const tail = children.map(c => c.outerHTML).join('');
+    const duration = 1100;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = Math.round(target * eased);
+      el.innerHTML = prefix + val + suffix + tail;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ── magnetic nav links ─────────────────────────────────────────────────────────────────────────────
+  if (!matchMedia('(pointer: coarse)').matches) {
+    document.querySelectorAll('.nav-links a, .theme-toggle').forEach(link => {
+      link.style.transition = 'transform 0.25s cubic-bezier(0.22,1,0.36,1), color 0.2s';
+      link.addEventListener('mousemove', (e) => {
+        const rect = link.getBoundingClientRect();
+        const dx = (e.clientX - (rect.left + rect.width/2)) * 0.35;
+        const dy = (e.clientY - (rect.top + rect.height/2)) * 0.35;
+        link.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+      link.addEventListener('mouseleave', () => {
+        link.style.transform = 'translate(0,0)';
+      });
+    });
+  }
+
+  // ── project card parallax tilt ──────────────────────────────────────────────────────────────────────────
+  if (!matchMedia('(pointer: coarse)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.project').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -2.4;
+        const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 2.4;
+        card.style.transform = `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+</script>
 
 </body>
 </html>
+
